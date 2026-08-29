@@ -1,0 +1,13 @@
+services:
+  depot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: warhammer-depot:production
+    restart: unless-stopped
+    ports:
+      - target: 80
+        published: "${DEPOT_PORT:-19096}"
+        host_ip: "${DEPOT_YGGDRASIL_ADDR:-127.0.0.1}"
+        protocol: tcp
+    init: true
