@@ -22,4 +22,10 @@ set -a
 . ./runtime/munda-supabase/env
 set +a
 docker compose --env-file .env.local --env-file ./runtime/munda-supabase/env build munda-web
-exec docker compose --env-file .env.local --env-file ./runtime/munda-supabase/env up -d
+docker compose --env-file .env.local --env-file ./runtime/munda-supabase/env up -d
+if ! ./scripts/apply-network-guard.sh; then
+    echo "Network guard failed; stopping the newly started project to avoid leaving Supabase published unprotected." >&2
+    docker compose --env-file .env.local --env-file ./runtime/munda-supabase/env down || true
+    ./scripts/munda-supabase.sh stop || true
+    exit 1
+fi

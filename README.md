@@ -100,6 +100,40 @@ The application ports are published only on `127.0.0.1`, the configured
 Tailscale IPv4, and the configured Tailscale IPv6. PostgreSQL and the Depot
 API are internal Compose services and are not published to the host.
 
+### Supabase publication guard
+
+Supabase CLI publishes its local gateway and PostgreSQL ports on wildcard
+Docker host bindings. `scripts/up.sh` applies a tagged, idempotent host
+iptables/ip6tables guard after the Docker network is up. Because Docker uses
+the userland proxy on this host, the guard is installed in both `INPUT` and
+`DOCKER-USER`: 54321 permits loopback, `tailscale0`, and only this project's
+Munda host-gateway path; 54322 permits loopback only. No default policy,
+unrelated chain, or other Docker publication is changed. `scripts/down.sh`
+removes only the tagged project rules.
+
+The guard requires root/CAP_NET_ADMIN. For host reboot persistence, the host
+owner should add a root-owned NixOS oneshot ordered after Docker, for example:
+
+```nix
+systemd.services.warhammer-depot-network-guard = {
+  wantedBy = [ "multi-user.target" ];
+  after = [ "docker.service" ];
+  wants = [ "docker.service" ];
+  serviceConfig = {
+    Type = "oneshot";
+    RemainAfterExit = true;
+    WorkingDirectory = "/home/ash/documents/code/warhammer";
+    ExecStart = "/home/ash/documents/code/warhammer/scripts/apply-network-guard.sh";
+    ExecStop = "/home/ash/documents/code/warhammer/scripts/remove-network-guard.sh";
+  };
+};
+```
+
+Do not add this snippet to the repository automatically: `/etc/nixos` is the
+host's authoritative configuration. Until it is installed there, run
+`./scripts/up.sh` after boot and verify with
+`./scripts/check-network-guard.sh`.
+
 ### nginx routing
 
 `/data/` is served only when the requested generated file exists and otherwise

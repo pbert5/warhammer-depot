@@ -10,4 +10,5 @@ if [ ! -f .env.local ]; then
 fi
 
 docker compose --env-file .env.local down
-exec ./scripts/munda-supabase.sh stop
+./scripts/munda-supabase.sh stop
+exec ./scripts/remove-network-guard.sh
