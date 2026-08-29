@@ -65,14 +65,16 @@ write_env() {
 
 bootstrap_user() {
     [ -n "${MUNDA_ACCEPTANCE_EMAIL:-}" ] && [ -n "${MUNDA_ACCEPTANCE_PASSWORD:-}" ] || return 0
-    url=${MUNDA_SUPABASE_INTERNAL_URL:-http://127.0.0.1:54321}
+    # This script runs on the host.  The internal URL is intentionally a
+    # Docker-only hostname and must never be used for host-side bootstrap.
+    url=http://127.0.0.1:54321
     key=${MUNDA_SUPABASE_SERVICE_ROLE_KEY:?missing MUNDA_SUPABASE_SERVICE_ROLE_KEY}
     if command -v jq >/dev/null 2>&1; then
         payload=$(jq -cn --arg email "$MUNDA_ACCEPTANCE_EMAIL" --arg password "$MUNDA_ACCEPTANCE_PASSWORD" \
-          '{email:$email,password:$password,email_confirm:true}')
+          '{email:$email,password:$password,email_confirm:true,user_metadata:{username:"codex_acceptance"}}')
     elif command -v python3 >/dev/null 2>&1; then
         payload=$(MUNDA_ACCEPTANCE_EMAIL="$MUNDA_ACCEPTANCE_EMAIL" MUNDA_ACCEPTANCE_PASSWORD="$MUNDA_ACCEPTANCE_PASSWORD" \
-          python3 -c 'import json, os; print(json.dumps({"email": os.environ["MUNDA_ACCEPTANCE_EMAIL"], "password": os.environ["MUNDA_ACCEPTANCE_PASSWORD"], "email_confirm": True}))')
+          python3 -c 'import json, os; print(json.dumps({"email": os.environ["MUNDA_ACCEPTANCE_EMAIL"], "password": os.environ["MUNDA_ACCEPTANCE_PASSWORD"], "email_confirm": True, "user_metadata": {"username": "codex_acceptance"}}))')
     else
         die "jq or python3 is required for safe local auth bootstrap JSON"
     fi

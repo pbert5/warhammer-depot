@@ -9,6 +9,11 @@ if [ ! -f .env.local ]; then
     exit 1
 fi
 
+# Create the ignored credential directory before Docker creates any runtime
+# bind-mount parents as root.  This keeps a fresh clone writable by the
+# operator who runs the launcher.
+mkdir -p runtime/munda-supabase
+
 ./scripts/munda-supabase.sh start
 # The generated anon key is a build-time NEXT_PUBLIC value in Next.js. Build
 # Munda after the local stack starts so the browser gets the current project
