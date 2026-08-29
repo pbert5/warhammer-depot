@@ -1,0 +1,6 @@
+[submodule "vendor/depot"]
+	path = vendor/depot
+	url = https://github.com/fjlaubscher/depot.git
+[submodule "data/lists"]
+	path = data/lists
+	url = https://github.com/pbert5/warhammer-lists.git
