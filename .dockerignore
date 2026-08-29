@@ -9,4 +9,5 @@ vendor/depot/.git
 vendor/depot/node_modules
 vendor/depot/packages/*/node_modules
 vendor/depot/packages/web/dist
+vendor/depot/.pnpm-store
 data/lists
