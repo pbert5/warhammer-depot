@@ -48,10 +48,11 @@ changing the pinned source or deployment image.
 
 ### Binding and access
 
-Compose publishes the same container port twice: explicitly on `127.0.0.1`
-and on the host's specific Tailscale IPv6 address. Set
-`DEPOT_TAILSCALE_ADDR` to the value from `tailscale ip -6` (without brackets).
-Compose refuses to start if that address is not configured, avoiding accidental
+Compose publishes the same container port three times: explicitly on
+`127.0.0.1`, the host's specific Tailscale IPv4 address, and its specific
+Tailscale IPv6 address. Set `DEPOT_TAILSCALE_IPV4_ADDR` from `tailscale ip -4`
+and `DEPOT_TAILSCALE_ADDR` from `tailscale ip -6` (without brackets). Compose
+refuses to start if either address is not configured, avoiding accidental
 wildcard exposure. `DEPOT_PORT` defaults to `19096`.
 
 Stop the service with:

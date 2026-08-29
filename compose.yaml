@@ -12,6 +12,10 @@ services:
         protocol: tcp
       - target: 80
         published: "${DEPOT_PORT:-19096}"
+        host_ip: "${DEPOT_TAILSCALE_IPV4_ADDR:?Set DEPOT_TAILSCALE_IPV4_ADDR in .env.local}"
+        protocol: tcp
+      - target: 80
+        published: "${DEPOT_PORT:-19096}"
         host_ip: "${DEPOT_TAILSCALE_ADDR:?Set DEPOT_TAILSCALE_ADDR in .env.local}"
         protocol: tcp
     init: true
