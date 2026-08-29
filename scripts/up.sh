@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$SCRIPT_DIR/.."
+
+if [ ! -f .env.local ]; then
+    echo "Missing .env.local; copy .env.local.example and set deployment values." >&2
+    exit 1
+fi
+
+# No --build here: restart reuses the already-built production image. Run
+# `docker compose ... build` explicitly when the pinned source changes.
+exec docker compose --env-file .env.local up -d
