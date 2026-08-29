@@ -1,0 +1,7 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "warhammer-chrome-devtools",
+  "version": "0.1.0",
+  "description": "Compose-hosted Chrome DevTools MCP for Warhammer browser acceptance",
+  "author": {"name": "Warhammer project"}
+}

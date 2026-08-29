@@ -1,0 +1,6 @@
+name = "repo-scout"
+description = "Read-only repository mapping and execution-path scout."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "low"
+sandbox_mode = "read-only"
+developer_instructions = "Read applicable AGENTS.md files first. Map ownership, branch/submodule state, Compose services, tests, browser paths, and risks. Stay read-only and return evidence-backed handoffs."

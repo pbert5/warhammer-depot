@@ -1,0 +1,5 @@
+{
+  "extraKnownMarketplaces": {"warhammer-project": {"source": {"source": "directory", "path": "."}}},
+  "enabledPlugins": {"warhammer-chrome-devtools@warhammer-project": true},
+  "disabledMcpjsonServers": ["github", "postgres", "playwright"]
+}
