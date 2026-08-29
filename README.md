@@ -61,6 +61,35 @@ Stop the service with:
 ./scripts/down.sh
 ```
 
+The supported topology is a small launcher on `19095`, Depot on `19096`, and
+Munda Manager on `19097`. Depot's mutable rosters and collections are stored
+by its internal Node API in the named `depot-db-data` PostgreSQL volume;
+Wahapedia reference data remains generated and static in the Depot web image.
+Normal saves never require GitHub or the private lists repository.
+
+Depot portable backups are produced automatically under the ignored
+`runtime/backups/depot/` bind mount. Run `./scripts/backup-depot.sh` for an
+explicit JSON snapshot and `./scripts/backup-postgres.sh` for a custom-format
+database dump. Restore SQL dumps only after review with
+`./scripts/restore-postgres.sh path/to/file.dump`.
+
+JSON is the canonical versioned `depot-user-data` format (format version 1);
+the API also exports/imports the same bundle as safe YAML. Existing
+`depot-offline` IndexedDB roster and collection stores are retained as a
+recovery source and copied once the API is available; the migration marker is
+stored in IndexedDB and no old data is deleted automatically.
+
+Munda Manager is pinned as `vendor/mundamanager` and remains on its own
+Supabase/Postgres schema. Its production image is built from the committed
+Next.js standalone output. To use authenticated Munda routes, start the
+Munda repository's local Supabase CLI stack from `vendor/mundamanager` and
+set its local URL and anon key in `.env.local`; the committed placeholder
+Turnstile values are only for private local development.
+
+The application ports are published only on `127.0.0.1`, the configured
+Tailscale IPv4, and the configured Tailscale IPv6. PostgreSQL and the Depot
+API are internal Compose services and are not published to the host.
+
 ### nginx routing
 
 `/data/` is served only when the requested generated file exists and otherwise
