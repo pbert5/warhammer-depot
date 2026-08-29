@@ -1,0 +1,7 @@
+FROM node:24-bookworm-slim
+WORKDIR /src
+RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
+COPY vendor/depot/ ./vendor/depot/
+WORKDIR /src/vendor/depot
+RUN pnpm install --frozen-lockfile && pnpm --filter @depot/api build
+CMD ["sh", "-c", "pnpm --filter @depot/api migrate && exec pnpm --filter @depot/api start"]

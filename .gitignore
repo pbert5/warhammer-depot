@@ -1,5 +1,6 @@
 .env.local
 !.env.local.example
+runtime/backups/
 .DS_Store
 *.log
 .worktrees/

@@ -1,5 +1,40 @@
 services:
-  depot:
+  depot-db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "${DEPOT_POSTGRES_DB:-depot}"
+      POSTGRES_USER: "${DEPOT_POSTGRES_USER:-depot}"
+      POSTGRES_PASSWORD: "${DEPOT_POSTGRES_PASSWORD:?Set DEPOT_POSTGRES_PASSWORD in .env.local}"
+    volumes:
+      - depot-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  depot-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: warhammer-depot-api:production
+    restart: unless-stopped
+    environment:
+      PORT: 8787
+      DATABASE_URL: "postgresql://${DEPOT_POSTGRES_USER:-depot}:${DEPOT_POSTGRES_PASSWORD:?Set DEPOT_POSTGRES_PASSWORD in .env.local}@depot-db:5432/${DEPOT_POSTGRES_DB:-depot}"
+    depends_on:
+      depot-db:
+        condition: service_healthy
+    expose:
+      - "8787"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:8787/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  depot-web:
     build:
       context: .
       dockerfile: Dockerfile
@@ -19,3 +54,69 @@ services:
         host_ip: "${DEPOT_TAILSCALE_ADDR:?Set DEPOT_TAILSCALE_ADDR in .env.local}"
         protocol: tcp
     init: true
+    depends_on:
+      depot-api:
+        condition: service_healthy
+
+  depot-backup:
+    image: alpine:3.22
+    restart: unless-stopped
+    depends_on:
+      depot-api:
+        condition: service_healthy
+    environment:
+      BACKUP_INTERVAL_SECONDS: "${DEPOT_BACKUP_INTERVAL_SECONDS:-21600}"
+      BACKUP_RETENTION: "${DEPOT_BACKUP_RETENTION:-20}"
+    volumes:
+      - ./runtime/backups/depot:/backups
+    command: ["/bin/sh", "-c", "apk add --no-cache curl >/dev/null; while true; do stamp=$$(date -u +%Y-%m-%dT%H%M%SZ); tmp=/backups/.depot-backup-$$stamp.json.tmp; curl --fail --silent http://depot-api:8787/api/export > $$tmp && mv $$tmp /backups/depot-backup-$$stamp.json; ls -1t /backups/depot-backup-*.json 2>/dev/null | tail -n +$$(($$BACKUP_RETENTION + 1)) | xargs -r rm -f; sleep $$BACKUP_INTERVAL_SECONDS; done"]
+
+  home:
+    image: nginx:1.29-alpine
+    restart: unless-stopped
+    volumes:
+      - ./launcher:/usr/share/nginx/html:ro
+      - ./nginx/launcher.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - target: 80
+        published: "${WARHAMMER_HOME_PORT:-19095}"
+        host_ip: "127.0.0.1"
+      - target: 80
+        published: "${WARHAMMER_HOME_PORT:-19095}"
+        host_ip: "${DEPOT_TAILSCALE_IPV4_ADDR:?Set DEPOT_TAILSCALE_IPV4_ADDR in .env.local}"
+      - target: 80
+        published: "${WARHAMMER_HOME_PORT:-19095}"
+        host_ip: "${DEPOT_TAILSCALE_ADDR:?Set DEPOT_TAILSCALE_ADDR in .env.local}"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1/"]
+
+  munda-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.munda
+    image: warhammer-munda:production
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_APP_URL: "${MUNDA_APP_URL:-http://localhost:19097}"
+      NEXT_PUBLIC_SUPABASE_URL: "${MUNDA_SUPABASE_URL:-http://host.docker.internal:54321}"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${MUNDA_SUPABASE_ANON_KEY:-local-anon-key}"
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: "${MUNDA_TURNSTILE_SITE_KEY:-1x00000000000000000000AA}"
+      TURNSTILE_SECRET_KEY: "${MUNDA_TURNSTILE_SECRET_KEY:-1x0000000000000000000000000000000AA}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - target: 3000
+        published: "${MUNDA_PORT:-19097}"
+        host_ip: "127.0.0.1"
+      - target: 3000
+        published: "${MUNDA_PORT:-19097}"
+        host_ip: "${DEPOT_TAILSCALE_IPV4_ADDR:?Set DEPOT_TAILSCALE_IPV4_ADDR in .env.local}"
+      - target: 3000
+        published: "${MUNDA_PORT:-19097}"
+        host_ip: "${DEPOT_TAILSCALE_ADDR:?Set DEPOT_TAILSCALE_ADDR in .env.local}"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3000/"]
+
+volumes:
+  depot-db-data:
