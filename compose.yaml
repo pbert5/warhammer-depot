@@ -8,6 +8,10 @@ services:
     ports:
       - target: 80
         published: "${DEPOT_PORT:-19096}"
-        host_ip: "${DEPOT_YGGDRASIL_ADDR:-127.0.0.1}"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+      - target: 80
+        published: "${DEPOT_PORT:-19096}"
+        host_ip: "${DEPOT_TAILSCALE_ADDR:?Set DEPOT_TAILSCALE_ADDR in .env.local}"
         protocol: tcp
     init: true

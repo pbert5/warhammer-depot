@@ -36,7 +36,7 @@ The `vendor/depot` submodule must be checked out at the A0-approved commit
 
 ```sh
 cp .env.local.example .env.local
-# Edit .env.local when the host's Yggdrasil address is known.
+# Set DEPOT_TAILSCALE_ADDR to the host's address from `tailscale ip -6`.
 docker compose --env-file .env.local build
 ./scripts/up.sh
 ./scripts/smoke.sh
@@ -48,12 +48,11 @@ changing the pinned source or deployment image.
 
 ### Binding and access
 
-Compose's long-form port mapping accepts an IPv6 `host_ip`. Set
-`DEPOT_YGGDRASIL_ADDR` to the host's specific Yggdrasil IPv6 address (without
-brackets); traffic will then bind only to that address. While it is blank,
-Compose uses the documented narrow fallback `127.0.0.1`, making the service
-loopback-only rather than exposing it on all interfaces. `DEPOT_PORT` defaults
-to `19096`.
+Compose publishes the same container port twice: explicitly on `127.0.0.1`
+and on the host's specific Tailscale IPv6 address. Set
+`DEPOT_TAILSCALE_ADDR` to the value from `tailscale ip -6` (without brackets).
+Compose refuses to start if that address is not configured, avoiding accidental
+wildcard exposure. `DEPOT_PORT` defaults to `19096`.
 
 Stop the service with:
 
