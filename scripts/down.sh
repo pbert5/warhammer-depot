@@ -9,4 +9,5 @@ if [ ! -f .env.local ]; then
     exit 1
 fi
 
-exec docker compose --env-file .env.local down
+docker compose --env-file .env.local down
+exec ./scripts/munda-supabase.sh stop

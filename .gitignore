@@ -4,3 +4,4 @@ runtime/backups/
 .DS_Store
 *.log
 .worktrees/
+runtime/munda-supabase/

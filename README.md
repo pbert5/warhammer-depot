@@ -80,11 +80,21 @@ recovery source and copied once the API is available; the migration marker is
 stored in IndexedDB and no old data is deleted automatically.
 
 Munda Manager is pinned as `vendor/mundamanager` and remains on its own
-Supabase/Postgres schema. Its production image is built from the committed
-Next.js standalone output. To use authenticated Munda routes, start the
-Munda repository's local Supabase CLI stack from `vendor/mundamanager` and
-set its local URL and anon key in `.env.local`; the committed placeholder
-Turnstile values are only for private local development.
+Supabase/Postgres schema. `./scripts/up.sh` downloads the pinned Supabase CLI
+release (with a checksum), starts the checked-in local project and seed files,
+generates an ignored runtime credential file, builds Munda with the current
+public anon key, and starts the application. The browser uses the restricted
+`http://localhost:54321` gateway; container-side server calls use Docker's
+`host.docker.internal` route. Set `MUNDA_ACCEPTANCE_EMAIL` and
+`MUNDA_ACCEPTANCE_PASSWORD` in `.env.local` only when an ephemeral local test
+user should be created automatically. Local email confirmation is disabled in
+the CLI project only. No SES, Discord, or hosted webhook is required.
+
+Use `./scripts/down.sh` to stop both stacks while retaining their volumes.
+`RESET_MUNDA_LOCAL_CONFIRM=RESET ./scripts/reset-munda-local.sh` is the
+explicit destructive local database reset. The committed placeholder
+Turnstile values are only for private local development; production auth
+semantics remain unchanged.
 
 The application ports are published only on `127.0.0.1`, the configured
 Tailscale IPv4, and the configured Tailscale IPv6. PostgreSQL and the Depot

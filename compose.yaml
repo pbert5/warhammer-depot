@@ -94,14 +94,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.munda
+      args:
+        MUNDA_BUILD_SUPABASE_URL: "${MUNDA_SUPABASE_URL:-http://localhost:54321}"
+        MUNDA_BUILD_SUPABASE_ANON_KEY: "${MUNDA_SUPABASE_ANON_KEY:-local-anon-key}"
     image: warhammer-munda:production
     restart: unless-stopped
     environment:
       NODE_ENV: production
       HOSTNAME: 0.0.0.0
       NEXT_PUBLIC_APP_URL: "${MUNDA_APP_URL:-http://localhost:19097}"
-      NEXT_PUBLIC_SUPABASE_URL: "${MUNDA_SUPABASE_URL:-http://host.docker.internal:54321}"
+      NEXT_PUBLIC_SUPABASE_URL: "${MUNDA_SUPABASE_URL:-http://localhost:54321}"
       NEXT_PUBLIC_SUPABASE_ANON_KEY: "${MUNDA_SUPABASE_ANON_KEY:-local-anon-key}"
+      MUNDA_SUPABASE_INTERNAL_URL: "${MUNDA_SUPABASE_INTERNAL_URL:-http://host.docker.internal:54321}"
+      SUPABASE_SERVICE_ROLE_KEY: "${MUNDA_SUPABASE_SERVICE_ROLE_KEY:-}"
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: "${MUNDA_TURNSTILE_SITE_KEY:-1x00000000000000000000AA}"
       TURNSTILE_SECRET_KEY: "${MUNDA_TURNSTILE_SECRET_KEY:-1x0000000000000000000000000000000AA}"
     extra_hosts:
