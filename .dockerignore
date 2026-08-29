@@ -1,0 +1,11 @@
+.git
+.gitmodules
+.env*
+.worktrees
+README.md
+AGENTS.md
+data/lists/.git
+vendor/depot/.git
+vendor/depot/node_modules
+vendor/depot/packages/*/node_modules
+vendor/depot/packages/web/dist
