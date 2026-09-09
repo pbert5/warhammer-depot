@@ -124,6 +124,27 @@ services:
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"]
 
+  depot-test:
+    build:
+      context: ./vendor/depot
+      dockerfile: Dockerfile.test
+    profiles: ["test"]
+    init: true
+    working_dir: /app
+
+  depot-e2e:
+    build:
+      context: ./vendor/depot
+      dockerfile: Dockerfile.test
+    profiles: ["e2e"]
+    init: true
+    working_dir: /app
+    environment:
+      WEB_BASE_URL: "http://depot-web"
+    depends_on:
+      depot-web:
+        condition: service_healthy
+
   chrome-devtools-mcp:
     build:
       context: .
