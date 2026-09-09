@@ -1,0 +1,2 @@
+# Deliberate fork divergences only. A failing oracle contract is not an override.
+overrides: []
