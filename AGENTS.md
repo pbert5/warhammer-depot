@@ -15,6 +15,6 @@
 - `docker compose` is the development, runtime, build, test, and acceptance authority. Do not require host Node, pnpm, browsers, PostgreSQL clients, local servers, or DevTools installations.
 - Browser-visible work uses the disposable Compose-hosted Chrome DevTools MCP. Bring up the relevant deployed topology, inspect DOM/styles/console/network and interactions at desktop and narrow widths, run deterministic tests through Compose, then perform final front-door acceptance.
 - The browser service uses stdio MCP and container-local CDP only; never publish port 9222 or attach to a personal browser. Do not put secrets in screenshots or logs.
-- Use `gpt-5.6-luna` as the Codex repository-agent default: low for scouts/docs/mechanical checks and medium for implementation, acceptance, integration, and debugging. Do not use Terra by default.
+- Use `gpt-5.6-luna` as the Codex repository-agent default: low for scouts/docs/mechanical checks and medium for implementation, acceptance, integration, and debugging. Every substantial implementation run also keeps a persistent read-only Terra `test-architect`; migration/deployment work keeps a separate read-only Terra `recovery-adviser`; complex rules archaeology may use the bounded read-only Terra `rules-archaeologist`. Terra never mutates repository, Git, runtime, Docker, or database state; Luna remains the mutation authority.
 
 See [docs/agent-workflows.md](docs/agent-workflows.md) for role contracts, dependency examples, repair loop, and canonical commands.
