@@ -50,6 +50,14 @@ cp .env.e2e.example .env.e2e  # set disposable values; never commit .env.e2e
 ./scripts/purge-e2e.sh       # dry-run (default)
 ./scripts/purge-e2e.sh --apply
 
+# One-time cleanup of legacy generated Depot documents (dry-run by default).
+# Make and retain a PostgreSQL dump before the explicit apply; users are never
+# deleted and rows without all selector evidence are retained.
+./scripts/cleanup-legacy-depot-fixtures.sh
+./scripts/backup-postgres.sh
+./scripts/cleanup-legacy-depot-fixtures.sh --apply \
+  --backup-evidence runtime/backups/postgres/depot-postgres-<timestamp>.dump
+
 # The E2E Compose project uses reserved UUID
 # 00000000-0000-0000-0000-000000000002, bootstraps that users row, and keeps
 # its database in project-specific depot-e2e-db-data. Purge retains the row
