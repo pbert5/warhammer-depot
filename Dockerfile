@@ -8,9 +8,12 @@ RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
 # Keep the upstream repository isolated under vendor/depot. The parent owns
 # this Dockerfile and chooses which checked-out submodule contents to build.
 COPY vendor/depot/ ./vendor/depot/
+COPY scripts/depot-data-cache.mjs /tmp/depot-data-cache.mjs
+COPY data/depot-source/ /src/vendor/depot/packages/cli/dist/source_data/
 WORKDIR /src/vendor/depot
 
 RUN pnpm install --frozen-lockfile
+RUN node /tmp/depot-data-cache.mjs --validate /src/vendor/depot/packages/cli/dist/source_data
 RUN pnpm build
 
 FROM nginx:1.29-alpine AS production

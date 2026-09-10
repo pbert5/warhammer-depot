@@ -28,6 +28,22 @@ image. The image uses Node 24, pnpm 10.20.0, `pnpm install --frozen-lockfile`,
 and `pnpm build`. The upstream build generates Wahapedia data and places it in
 `packages/web/dist/data`, which is served as static JSON.
 
+Reference CSVs are kept in the parent-owned, hashed snapshot at
+`data/depot-source/`. Normal image and Compose test builds validate and use
+that snapshot without network access. To intentionally fetch a new snapshot,
+run the isolated Compose refresh service:
+
+```sh
+DEPOT_POSTGRES_PASSWORD=cache-test \
+DEPOT_TAILSCALE_IPV4_ADDR=127.0.0.1 DEPOT_TAILSCALE_ADDR=127.0.0.1 \
+docker compose --profile data run --rm depot-data-refresh
+```
+
+The refresh stages every expected CSV, records its URL, timestamp, size, and
+SHA-256 in `manifest.json`, validates the staged directory, and swaps it into
+place only after validation. A failed download therefore leaves the previous
+known-good snapshot untouched.
+
 ### First deployment
 
 Build from the `vendor/depot` commit recorded by the parent repository's

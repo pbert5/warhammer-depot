@@ -149,6 +149,26 @@ services:
     profiles: ["test"]
     init: true
     working_dir: /app
+    volumes:
+      - ./data/depot-source:/app/packages/cli/dist/source_data:ro
+
+  depot-data-refresh:
+    image: node:24-bookworm-slim
+    profiles: ["data"]
+    user: "${DEPOT_DATA_UID:-1000}:${DEPOT_DATA_GID:-100}"
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: ["node", "scripts/depot-data-cache.mjs", "--refresh"]
+
+  depot-data-test:
+    image: node:24-bookworm-slim
+    profiles: ["data"]
+    user: "${DEPOT_DATA_UID:-1000}:${DEPOT_DATA_GID:-100}"
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: ["node", "--test", "scripts/depot-data-cache.test.mjs"]
 
   depot-e2e:
     build:
