@@ -35,3 +35,11 @@ def test_cleanup_never_deletes_users_and_uses_a_transaction():
     assert "COMMIT;" in SCRIPT
     assert "DELETE FROM rosters" in SCRIPT
     assert "DELETE FROM collections" in SCRIPT
+
+
+def test_cleanup_uses_canonical_compose_project_resolution():
+    assert '. "$ROOT/scripts/compose-common.sh"' in SCRIPT
+    assert 'load_compose_environment "$ROOT"' in SCRIPT
+    assert "project=${COMPOSE_PROJECT_NAME:-warhammer}" in SCRIPT
+    assert "warhammer|warhammer-*" in SCRIPT
+    assert "--project-name" not in SCRIPT
