@@ -44,6 +44,17 @@ docker compose --profile test run --rm depot-test pnpm typecheck
 docker compose --profile test run --rm depot-test pnpm build
 docker compose --profile test run --rm depot-test pnpm --filter @depot/web test:e2e
 
+# Disposable, loopback-only Depot E2E topology and identities
+cp .env.e2e.example .env.e2e  # set disposable values; never commit .env.e2e
+./scripts/e2e.sh
+./scripts/purge-e2e.sh       # dry-run (default)
+./scripts/purge-e2e.sh --apply
+
+# The E2E Compose project uses reserved UUID
+# 00000000-0000-0000-0000-000000000002, bootstraps that users row, and keeps
+# its database in project-specific depot-e2e-db-data. Purge retains the row
+# and fails closed if the row or post-purge counts are wrong.
+
 # Munda standalone
 docker compose -f compose.standalone.yaml up -d --build
 docker compose -f compose.standalone.yaml run --rm --no-deps -T chrome-devtools-mcp
