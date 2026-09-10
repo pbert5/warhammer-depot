@@ -42,4 +42,5 @@ def test_cleanup_uses_canonical_compose_project_resolution():
     assert 'load_compose_environment "$ROOT"' in SCRIPT
     assert "project=${COMPOSE_PROJECT_NAME:-warhammer}" in SCRIPT
     assert "warhammer|warhammer-*" in SCRIPT
+    assert 'export COMPOSE_PROJECT_NAME="$project"' in SCRIPT
     assert "--project-name" not in SCRIPT

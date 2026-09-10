@@ -53,6 +53,7 @@ case "$project" in
     warhammer|warhammer-*) ;;
     *) echo "Refusing unexpected Compose project: $project" >&2; exit 2 ;;
 esac
+export COMPOSE_PROJECT_NAME="$project"
 
 compose config --quiet
 db_user=${DEPOT_POSTGRES_USER:-depot}
