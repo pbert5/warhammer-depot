@@ -1,0 +1,13 @@
+{
+  "name": "warhammer-project",
+  "owner": {
+    "name": "Warhammer project"
+  },
+  "plugins": [
+    {
+      "name": "warhammer-chrome-devtools",
+      "source": "./.claude/plugins/chrome-devtools",
+      "description": "Compose-hosted Chrome DevTools MCP for Warhammer browser acceptance"
+    }
+  ]
+}
