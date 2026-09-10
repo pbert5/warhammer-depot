@@ -19,9 +19,9 @@ for service in depot-web depot-api munda-web; do
     container=$(compose ps -q "$service" 2>/dev/null || true)
     if [ -n "$container" ]; then
         image_id=$(docker inspect --format '{{.Image}}' "$container")
-        labels=$(docker inspect --format '{{index .Config.Labels "org.opencontainers.image.source.revision"}} {{index .Config.Labels "com.warhammer.depot.revision"}} {{index .Config.Labels "com.warhammer.munda.revision"}}' "$container")
-        set -- $labels
-        parent_label=$1; depot_label=$2; munda_label=$3
+        parent_label=$(docker inspect --format '{{index .Config.Labels "org.opencontainers.image.source.revision"}}' "$container")
+        depot_label=$(docker inspect --format '{{index .Config.Labels "com.warhammer.depot.revision"}}' "$container")
+        munda_label=$(docker inspect --format '{{index .Config.Labels "com.warhammer.munda.revision"}}' "$container")
         printf '  %s: image=%s parent=%s depot=%s munda=%s\n' "$service" "$image_id" "$parent_label" "$depot_label" "$munda_label"
         case "$service" in
             depot-web|depot-api) [ "$depot_label" = "$DEPOT_SOURCE_REVISION" ] || { echo "STALE Depot revision on $service" >&2; exit 1; } ;;

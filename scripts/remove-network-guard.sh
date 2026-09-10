@@ -2,7 +2,7 @@
 set -eu
 
 TAG=warhammer-depot-supabase-guard
-CHAIN=WARHAMMER_DEPOT_SUPABASE_GUARD
+CHAIN=WH_DEPOT_SUPA_GUARD
 
 if [ "$(id -u)" -ne 0 ]; then
     command -v sudo >/dev/null 2>&1 || { echo "network guard requires root or sudo" >&2; exit 1; }

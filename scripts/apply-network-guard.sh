@@ -3,12 +3,20 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 TAG=warhammer-depot-supabase-guard
-CHAIN=WARHAMMER_DEPOT_SUPABASE_GUARD
+CHAIN=WH_DEPOT_SUPA_GUARD
 NETWORK=warhammer_default
 
 if [ "$(id -u)" -ne 0 ]; then
-    command -v sudo >/dev/null 2>&1 || { echo "network guard requires root or sudo" >&2; exit 1; }
-    exec sudo "$0" "$@"
+    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+        exec sudo "$0" "$@"
+    fi
+    command -v docker >/dev/null 2>&1 || { echo "network guard requires root, sudo, or Docker" >&2; exit 1; }
+    ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+    exec docker run --rm --privileged --network host \
+        -v /run/docker.sock:/var/run/docker.sock \
+        -v "$ROOT:/repo" alpine:3.22 sh -c \
+        'apk add --no-cache iptables docker-cli >/dev/null && exec /repo/scripts/apply-network-guard.sh "$@"' \
+        guard "$@"
 fi
 
 command -v iptables >/dev/null 2>&1 || { echo "iptables is required" >&2; exit 1; }
