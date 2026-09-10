@@ -1,0 +1,92 @@
+name: Compose CI
+
+on:
+  push:
+    branches: [make-it-work]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compose-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEPOT_POSTGRES_PASSWORD: ci-disposable-password
+  DEPOT_TAILSCALE_IPV4_ADDR: 127.0.0.1
+  DEPOT_TAILSCALE_ADDR: 127.0.0.1
+
+jobs:
+  fast-checks:
+    name: Compose fast checks
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_PROJECT_NAME: warhammer-ci-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out parent and Depot submodule
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Initialize pinned Depot submodule
+        run: git submodule update --init vendor/depot
+
+      - name: Validate Compose configuration
+        run: docker compose --profile test config --quiet
+
+      - name: Build Compose test image
+        run: docker compose --profile test build depot-test
+
+      - name: Run core, CLI, web, and API tests in Compose
+        run: >-
+          docker compose --profile test run --rm depot-test sh -ec
+          'pnpm --filter @depot/core build &&
+          pnpm --filter @depot/api build &&
+          pnpm --filter @depot/core test &&
+          pnpm --filter @depot/cli test &&
+          pnpm --filter @depot/web test &&
+          pnpm --filter @depot/api test'
+
+      - name: Run typecheck in Compose
+        run: docker compose --profile test run --rm depot-test pnpm typecheck
+
+      - name: Run build in Compose
+        run: docker compose --profile test run --rm depot-test pnpm build
+
+      - name: Clean Compose resources
+        if: always()
+        run: docker compose --profile test down --volumes --remove-orphans
+
+  e2e:
+    name: Compose isolated E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out parent and Depot submodule
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Initialize pinned Depot submodule
+        run: git submodule update --init vendor/depot
+
+      - name: Create disposable E2E environment
+        run: |
+          cp .env.e2e.example .env.e2e
+          sed -i \
+            -e "s/^COMPOSE_PROJECT_NAME=.*/COMPOSE_PROJECT_NAME=warhammer-e2e-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/" \
+            -e 's/^DEPOT_POSTGRES_PASSWORD=.*/DEPOT_POSTGRES_PASSWORD=ci-disposable-password/' \
+            .env.e2e
+
+      - name: Run isolated E2E through Compose
+        run: ./scripts/e2e.sh
+
+      - name: Clean isolated E2E project
+        if: always()
+        run: |
+          test -f .env.e2e || exit 0
+          set -a
+          . ./.env.e2e
+          set +a
+          docker compose --project-name "$COMPOSE_PROJECT_NAME" --env-file .env.e2e \
+            -f compose.yaml -f compose.e2e.yaml down --volumes --remove-orphans
