@@ -1,42 +1,33 @@
-# Parent-owned parity role/status matrix. IDs must match the inventory exactly.
-schema: 1
-roles:
-  source: docs-maintainer
-  oracle: compose-runtime
-  candidate: test-verifier
-statuses:
-  static-confirmed:
-    owner: source
-    resolved: true
-  runtime-pending:
-    owner: oracle
-    resolved: false
+# Auditable closure matrix. Results are executable Compose/oracle evidence from
+# the current published checkpoints; oracle data provenance remains live
+# Wahapedia 11th-edition CSV as documented in the inventory.
+schema: 2
 entries:
-  NAV-001: {status: static-confirmed}
-  NAV-002: {status: static-confirmed}
-  HOME-001: {status: static-confirmed}
-  RULES-001: {status: static-confirmed}
-  FACTION-001: {status: static-confirmed}
-  DATASHEET-001: {status: static-confirmed}
-  DETACHMENT-001: {status: static-confirmed}
-  BOOKMARK-001: {status: static-confirmed}
-  SHARE-001: {status: static-confirmed}
-  ROSTER-CREATE-001: {status: static-confirmed}
-  ROSTER-DETAILS-001: {status: static-confirmed}
-  ROSTER-ADD-001: {status: static-confirmed}
-  ROSTER-ADD-002: {status: runtime-pending}
-  ROSTER-ADD-003: {status: runtime-pending}
-  ROSTER-ADD-004: {status: runtime-pending}
-  ROSTER-ADD-005: {status: static-confirmed}
-  ROSTER-ADD-006: {status: runtime-pending}
-  ROSTER-UNIT-001: {status: static-confirmed}
-  ROSTER-UNIT-002: {status: static-confirmed}
-  COLLECTION-001: {status: static-confirmed}
-  COLLECTION-002: {status: static-confirmed}
-  COLLECTION-003: {status: static-confirmed}
-  COLLECTION-004: {status: static-confirmed}
-  COLLECTION-005: {status: static-confirmed}
-  SETTINGS-001: {status: static-confirmed}
-  OFFLINE-001: {status: static-confirmed}
-  ERROR-001: {status: static-confirmed}
-  INFO-001: {status: static-confirmed}
+  NAV-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "factions/home E2E", candidate_result: pass, classification: parity-pass, repair_commit: "8bb0847", override: null, final_status: closed}
+  NAV-002: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "layout/navigation E2E", candidate_result: pass, classification: parity-pass, repair_commit: "8bb0847", override: null, final_status: closed}
+  HOME-001: {oracle_tests: "oracle home", oracle_result: pass, candidate_tests: "home.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  RULES-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "factions.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  FACTION-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "faction.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  DATASHEET-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "datasheet E2E", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  DETACHMENT-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "detachment E2E", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  BOOKMARK-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "bookmark unit/E2E", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  SHARE-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "datasheet-share.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  ROSTER-CREATE-001: {oracle_tests: "oracle roster", oracle_result: pass, candidate_tests: "rosters.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "ba9bf58", override: null, final_status: closed}
+  ROSTER-DETAILS-001: {oracle_tests: "oracle roster", oracle_result: pass, candidate_tests: "roster-details.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  ROSTER-ADD-001: {oracle_tests: "roster-add-units 9/9", oracle_result: pass, candidate_tests: "roster-add-units.spec.ts", candidate_result: pass, classification: product-fix, repair_commit: "e5f9119", override: null, final_status: closed}
+  ROSTER-ADD-002: {oracle_tests: "roster-add-units parity", oracle_result: pass, candidate_tests: "parity two-unit confirmation", candidate_result: pass, classification: product-fix, repair_commit: "e5f9119", override: null, final_status: closed}
+  ROSTER-ADD-003: {oracle_tests: "roster-add-units parity", oracle_result: pass, candidate_tests: "parity repeated quantity", candidate_result: pass, classification: product-fix, repair_commit: "e5f9119", override: null, final_status: closed}
+  ROSTER-ADD-004: {oracle_tests: "roster-add-units parity", oracle_result: pass, candidate_tests: "parity review/clear", candidate_result: pass, classification: product-fix, repair_commit: "e5f9119", override: null, final_status: closed}
+  ROSTER-ADD-005: {oracle_tests: "roster-add-units parity", oracle_result: pass, candidate_tests: "parity back/cancel", candidate_result: pass, classification: parity-pass, repair_commit: "e5f9119", override: null, final_status: closed}
+  ROSTER-ADD-006: {oracle_tests: "roster-add-units parity", oracle_result: pass, candidate_tests: "desktop/390px/360px projects", candidate_result: pass, classification: product-fix, repair_commit: "e5f9119", override: null, final_status: closed}
+  ROSTER-UNIT-001: {oracle_tests: "oracle roster", oracle_result: pass, candidate_tests: "roster-unit-card.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "b86530f", override: null, final_status: closed}
+  ROSTER-UNIT-002: {oracle_tests: "oracle roster", oracle_result: pass, candidate_tests: "roster-unit-card.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "b86530f", override: null, final_status: closed}
+  COLLECTION-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "collections.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "c613ab2", override: null, final_status: closed}
+  COLLECTION-002: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "collections add units", candidate_result: pass, classification: product-fix, repair_commit: "e5f9119", override: null, final_status: closed}
+  COLLECTION-003: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "collection state/edit 2/2", candidate_result: pass, classification: test-contract, repair_commit: "c613ab2", override: null, final_status: closed}
+  COLLECTION-004: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "collection duplicate/remove", candidate_result: pass, classification: test-contract, repair_commit: "c613ab2", override: null, final_status: closed}
+  COLLECTION-005: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "roster-from-collection.spec.ts", candidate_result: pass, classification: product-fix, repair_commit: "e5f9119", override: null, final_status: closed}
+  SETTINGS-001: {oracle_tests: "oracle settings", oracle_result: pass, candidate_tests: "settings.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  OFFLINE-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "offline unit/E2E", candidate_result: pass, classification: parity-pass, repair_commit: "8a7e502", override: null, final_status: closed}
+  ERROR-001: {oracle_tests: "oracle not-found", oracle_result: pass, candidate_tests: "not-found.spec.ts", candidate_result: pass, classification: parity-pass, repair_commit: "facd226", override: null, final_status: closed}
+  INFO-001: {oracle_tests: "oracle smoke", oracle_result: pass, candidate_tests: "info navigation E2E", candidate_result: pass, classification: parity-pass, repair_commit: "8d2ca60", override: null, final_status: closed}
