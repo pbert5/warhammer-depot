@@ -3,6 +3,7 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
+. "$ROOT/scripts/compose-common.sh"
 
 usage() {
     cat <<'EOF'
@@ -42,19 +43,17 @@ if [ "$mode" = apply ]; then
 fi
 
 [ -f .env.local ] || { echo "Missing .env.local; copy .env.local.example." >&2; exit 1; }
-set -a
-. ./.env.local
-set +a
+load_compose_environment "$ROOT"
 
-project=${COMPOSE_PROJECT_NAME:-warhammer-depot}
+# compose-common deliberately leaves Docker Compose to resolve its normal
+# project name from this repository directory: "warhammer". An explicit
+# COMPOSE_PROJECT_NAME may be used for a namespaced local instance.
+project=${COMPOSE_PROJECT_NAME:-warhammer}
 case "$project" in
-    warhammer-depot|warhammer-depot-*) ;;
+    warhammer|warhammer-*) ;;
     *) echo "Refusing unexpected Compose project: $project" >&2; exit 2 ;;
 esac
-
-compose() {
-    docker compose --project-name "$project" --env-file .env.local "$@"
-}
+export COMPOSE_PROJECT_NAME="$project"
 
 compose config --quiet
 db_user=${DEPOT_POSTGRES_USER:-depot}
@@ -91,14 +90,13 @@ WITH candidates AS (
 )
 SELECT kind, id, name, user_id, created_at, updated_at
   FROM candidates
- ORDER BY kind, created_at, id;
 SQL
 )
 
 echo "Legacy Depot fixture selector (dry-run=$([ "$mode" = dry-run ] && echo true || echo false))"
 echo "Compose project: $project; database: $db_name"
 echo "Candidates (exact kind, id, name, user_id, created_at, updated_at):"
-compose exec -T depot-db psql -v ON_ERROR_STOP=1 -P pager=off -U "$db_user" -d "$db_name" -c "$selector"
+compose exec -T depot-db psql -v ON_ERROR_STOP=1 -P pager=off -U "$db_user" -d "$db_name" -c "$selector ORDER BY kind, created_at, id;"
 
 if [ "$mode" = dry-run ]; then
     echo "No changes made. Ambiguous records were retained."

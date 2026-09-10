@@ -35,3 +35,20 @@ def test_cleanup_never_deletes_users_and_uses_a_transaction():
     assert "COMMIT;" in SCRIPT
     assert "DELETE FROM rosters" in SCRIPT
     assert "DELETE FROM collections" in SCRIPT
+
+
+def test_cleanup_uses_canonical_compose_project_resolution():
+    assert '. "$ROOT/scripts/compose-common.sh"' in SCRIPT
+    assert 'load_compose_environment "$ROOT"' in SCRIPT
+    assert "project=${COMPOSE_PROJECT_NAME:-warhammer}" in SCRIPT
+    assert "warhammer|warhammer-*" in SCRIPT
+    assert 'export COMPOSE_PROJECT_NAME="$project"' in SCRIPT
+    assert "--project-name" not in SCRIPT
+
+
+def test_postcondition_wraps_bare_selector_without_ordering_or_semicolon():
+    selector = SCRIPT.split("selector=$(cat <<'SQL'\n", 1)[1].split("\nSQL\n)", 1)[0]
+    assert "ORDER BY" not in selector
+    assert not selector.rstrip().endswith(";")
+    assert 'SELECT count(*) FROM ( $selector ) AS remaining;' in SCRIPT
+    assert '"$selector ORDER BY kind, created_at, id;"' in SCRIPT
