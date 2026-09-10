@@ -28,6 +28,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: 8787
+      DEPOT_USER_ID: "${DEPOT_USER_ID:-00000000-0000-0000-0000-000000000001}"
       DATABASE_URL: "postgresql://${DEPOT_POSTGRES_USER:-depot}:${DEPOT_POSTGRES_PASSWORD:?Set DEPOT_POSTGRES_PASSWORD in .env.local}@depot-db:5432/${DEPOT_POSTGRES_DB:-depot}"
     depends_on:
       depot-db:

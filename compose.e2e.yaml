@@ -1,0 +1,61 @@
+services:
+  depot-db:
+    volumes:
+      - depot-e2e-db-data:/var/lib/postgresql/data
+
+  depot-api:
+    environment:
+      DEPOT_USER_ID: "${WARHAMMER_E2E_PARENT_USER_ID:?Set WARHAMMER_E2E_PARENT_USER_ID in .env.e2e}"
+
+  depot-web:
+    ports: !override
+      - target: 80
+        published: "${DEPOT_E2E_PORT:-29106}"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+
+  home:
+    ports: !override
+      - target: 80
+        published: "${WARHAMMER_E2E_HOME_PORT:-29105}"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+
+  munda-web:
+    ports: !override
+      - target: 3000
+        published: "${MUNDA_E2E_PORT:-29107}"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+    environment:
+      NEXT_PUBLIC_APP_URL: "http://127.0.0.1:${MUNDA_E2E_PORT:-29107}"
+
+  depot-e2e-bootstrap:
+    image: postgres:17-alpine
+    environment:
+      PGHOST: depot-db
+      PGPORT: 5432
+      PGDATABASE: "${DEPOT_POSTGRES_DB:-depot_e2e}"
+      PGUSER: "${DEPOT_POSTGRES_USER:-depot_e2e}"
+      PGPASSWORD: "${DEPOT_POSTGRES_PASSWORD:?Set DEPOT_POSTGRES_PASSWORD in .env.e2e}"
+      DEPOT_USER_ID: "${WARHAMMER_E2E_PARENT_USER_ID:?Set WARHAMMER_E2E_PARENT_USER_ID in .env.e2e}"
+    depends_on:
+      depot-api:
+        condition: service_healthy
+    command:
+      - sh
+      - -ec
+      - >-
+        psql -v ON_ERROR_STOP=1
+        -c "INSERT INTO users (id, display_name) VALUES ('$$DEPOT_USER_ID'::uuid, 'E2E reserved user') ON CONFLICT (id) DO UPDATE SET display_name = EXCLUDED.display_name;
+        SELECT 1 FROM users WHERE id = '$$DEPOT_USER_ID'::uuid;"
+
+  depot-e2e:
+    depends_on:
+      depot-web:
+        condition: service_healthy
+      depot-e2e-bootstrap:
+        condition: service_completed_successfully
+
+volumes:
+  depot-e2e-db-data:

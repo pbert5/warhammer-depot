@@ -87,6 +87,21 @@ the API also exports/imports the same bundle as safe YAML. Existing
 recovery source and copied once the API is available; the migration marker is
 stored in IndexedDB and no old data is deleted automatically.
 
+For deterministic browser checks, copy `.env.e2e.example` to `.env.e2e` and
+run `./scripts/e2e.sh`. This uses a separate Compose project, a dedicated
+Depot database volume, and loopback-only ports. The parent Depot API is wired
+to the reserved E2E UUID
+`00000000-0000-0000-0000-000000000002`; a Compose bootstrap service inserts
+that users row after the API migration. It is intentionally distinct from
+Depot's default `...0001` identity. The E2E database and host bindings are
+namespaced and never use the normal project volume or Tailscale bindings.
+
+`./scripts/purge-e2e.sh` is a dry-run by default. Use
+`./scripts/purge-e2e.sh --apply` to remove only the reserved parent's rosters
+and collections. The script verifies the bootstrap row before mutation and
+the zero-document postcondition afterward; it never removes a volume and
+refuses non-`warhammer-e2e*` project names.
+
 Munda Manager is pinned as `vendor/mundamanager` and remains on its own
 Supabase/Postgres schema. `./scripts/up.sh` downloads the pinned Supabase CLI
 release (with a checksum), starts the checked-in local project and seed files,
