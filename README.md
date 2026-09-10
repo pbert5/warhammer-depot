@@ -40,14 +40,19 @@ image.
 ```sh
 cp .env.local.example .env.local
 # Set DEPOT_TAILSCALE_ADDR to the host's address from `tailscale ip -6`.
-docker compose --env-file .env.local build
+./scripts/build.sh
 ./scripts/up.sh
 ./scripts/smoke.sh
 ```
 
-`up.sh` intentionally does not pass `--build`, so restarts reuse the existing
-`warhammer-depot:production` image. Re-run the explicit build command after
-changing the pinned source or deployment image.
+`scripts/build.sh` validates the rendered Compose file and builds only the
+requested services without pulling floating base tags; frozen lockfiles and
+OCI revision labels make the checked-out inputs and built images auditable.
+`up.sh` intentionally does not build Depot,
+so restarts reuse the existing image. After a build, use
+`./scripts/recreate.sh` to replace containers without removing the named
+`depot-db-data` volume. `./scripts/status.sh` prints health, revision proof,
+and the network-guard state without exposing credentials.
 
 ### Binding and access
 

@@ -18,7 +18,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
+      args:
+        WARHAMMER_PARENT_REVISION: "${WARHAMMER_PARENT_REVISION:-unknown}"
+        DEPOT_SOURCE_REVISION: "${DEPOT_SOURCE_REVISION:-unknown}"
     image: warhammer-depot-api:production
+    labels:
+      org.opencontainers.image.source.revision: "${WARHAMMER_PARENT_REVISION:-unknown}"
+      com.warhammer.depot.revision: "${DEPOT_SOURCE_REVISION:-unknown}"
     restart: unless-stopped
     environment:
       PORT: 8787
@@ -38,7 +44,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        WARHAMMER_PARENT_REVISION: "${WARHAMMER_PARENT_REVISION:-unknown}"
+        DEPOT_SOURCE_REVISION: "${DEPOT_SOURCE_REVISION:-unknown}"
     image: warhammer-depot:production
+    labels:
+      org.opencontainers.image.source.revision: "${WARHAMMER_PARENT_REVISION:-unknown}"
+      com.warhammer.depot.revision: "${DEPOT_SOURCE_REVISION:-unknown}"
     restart: unless-stopped
     ports:
       - target: 80
@@ -97,7 +109,12 @@ services:
       args:
         MUNDA_BUILD_SUPABASE_URL: "${MUNDA_SUPABASE_URL:-http://localhost:54321}"
         MUNDA_BUILD_SUPABASE_ANON_KEY: "${MUNDA_SUPABASE_ANON_KEY:-local-anon-key}"
+        WARHAMMER_PARENT_REVISION: "${WARHAMMER_PARENT_REVISION:-unknown}"
+        MUNDA_SOURCE_REVISION: "${MUNDA_SOURCE_REVISION:-unknown}"
     image: warhammer-munda:production
+    labels:
+      org.opencontainers.image.source.revision: "${WARHAMMER_PARENT_REVISION:-unknown}"
+      com.warhammer.munda.revision: "${MUNDA_SOURCE_REVISION:-unknown}"
     restart: unless-stopped
     environment:
       NODE_ENV: production

@@ -1,4 +1,8 @@
 FROM node:24-bookworm-slim
+ARG WARHAMMER_PARENT_REVISION=unknown
+ARG DEPOT_SOURCE_REVISION=unknown
+LABEL org.opencontainers.image.source.revision=$WARHAMMER_PARENT_REVISION \
+      com.warhammer.depot.revision=$DEPOT_SOURCE_REVISION
 WORKDIR /src
 RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
 COPY vendor/depot/ ./vendor/depot/

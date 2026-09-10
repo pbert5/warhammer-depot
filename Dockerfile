@@ -15,6 +15,11 @@ RUN pnpm build
 
 FROM nginx:1.29-alpine AS production
 
+ARG WARHAMMER_PARENT_REVISION=unknown
+ARG DEPOT_SOURCE_REVISION=unknown
+LABEL org.opencontainers.image.source.revision=$WARHAMMER_PARENT_REVISION \
+      com.warhammer.depot.revision=$DEPOT_SOURCE_REVISION
+
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /src/vendor/depot/packages/web/dist/ /usr/share/nginx/html/
 
