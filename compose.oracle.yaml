@@ -1,0 +1,46 @@
+services:
+  oracle-web:
+    build:
+      context: "${WARHAMMER_ORACLE_SOURCE:?Set WARHAMMER_ORACLE_SOURCE to a detached oracle checkout}"
+      dockerfile: "${WARHAMMER_ORACLE_DOCKERFILE:?Set WARHAMMER_ORACLE_DOCKERFILE to Dockerfile.oracle}"
+    image: warhammer-depot-oracle:6d424fc
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1/"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  oracle-test:
+    build:
+      context: "${WARHAMMER_ORACLE_SOURCE:?Set WARHAMMER_ORACLE_SOURCE to a detached oracle checkout}"
+      dockerfile: "${WARHAMMER_ORACLE_TEST_DOCKERFILE:?Set WARHAMMER_ORACLE_TEST_DOCKERFILE to Dockerfile.oracle-test}"
+    image: warhammer-depot-oracle-test:6d424fc
+    profiles: [test]
+    init: true
+    environment:
+      CI: "1"
+      WEB_BASE_URL: http://oracle-web
+    volumes:
+      - "${WARHAMMER_ORACLE_PLAYWRIGHT_CONFIG:?Set WARHAMMER_ORACLE_PLAYWRIGHT_CONFIG to playwright.oracle.config.mjs}:/opt/playwright.oracle.config.mjs:ro"
+    depends_on:
+      oracle-web:
+        condition: service_healthy
+
+  chrome-devtools-mcp:
+    build:
+      context: "${WARHAMMER_REPO:?Set WARHAMMER_REPO to the parent repository}"
+      dockerfile: docker/Dockerfile.chrome-devtools-mcp
+    profiles: [development-tools]
+    init: true
+    stdin_open: true
+    tty: false
+    shm_size: 1gb
+    volumes:
+      - oracle-browser-profile:/tmp/chrome-profile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  oracle-browser-profile:
