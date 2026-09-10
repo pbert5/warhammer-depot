@@ -53,6 +53,19 @@ override registry. Fork-only API persistence, autosave, backup JSON/YAML, migrat
 catalogue URL/session state, category grouping, and enhanced search are intentionally
 excluded from this original-behavior inventory.
 
+The parent role/status matrix is `docs/parity/parity-status.yaml`. Its entries
+must be a one-to-one mapping of the inventory IDs; `runtime-pending` is
+unresolved until the oracle role records a passing runtime result. Validate the
+mapping with:
+
+```sh
+node scripts/validate-parity-status.mjs
+```
+
+The validator reports missing, extra, duplicate, or invalid IDs and exits
+nonzero while any unresolved status remains. It intentionally does not inspect
+or modify Depot submodule files.
+
 ## 2026-09-10 execution evidence
 
 The detached oracle `6d424fc55820d773bb20866a999750d9462f16e1` now passes its

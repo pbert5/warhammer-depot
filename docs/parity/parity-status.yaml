@@ -1,0 +1,42 @@
+# Parent-owned parity role/status matrix. IDs must match the inventory exactly.
+schema: 1
+roles:
+  source: docs-maintainer
+  oracle: compose-runtime
+  candidate: test-verifier
+statuses:
+  static-confirmed:
+    owner: source
+    resolved: true
+  runtime-pending:
+    owner: oracle
+    resolved: false
+entries:
+  NAV-001: {status: static-confirmed}
+  NAV-002: {status: static-confirmed}
+  HOME-001: {status: static-confirmed}
+  RULES-001: {status: static-confirmed}
+  FACTION-001: {status: static-confirmed}
+  DATASHEET-001: {status: static-confirmed}
+  DETACHMENT-001: {status: static-confirmed}
+  BOOKMARK-001: {status: static-confirmed}
+  SHARE-001: {status: static-confirmed}
+  ROSTER-CREATE-001: {status: static-confirmed}
+  ROSTER-DETAILS-001: {status: static-confirmed}
+  ROSTER-ADD-001: {status: static-confirmed}
+  ROSTER-ADD-002: {status: runtime-pending}
+  ROSTER-ADD-003: {status: runtime-pending}
+  ROSTER-ADD-004: {status: runtime-pending}
+  ROSTER-ADD-005: {status: static-confirmed}
+  ROSTER-ADD-006: {status: runtime-pending}
+  ROSTER-UNIT-001: {status: static-confirmed}
+  ROSTER-UNIT-002: {status: static-confirmed}
+  COLLECTION-001: {status: static-confirmed}
+  COLLECTION-002: {status: static-confirmed}
+  COLLECTION-003: {status: static-confirmed}
+  COLLECTION-004: {status: static-confirmed}
+  COLLECTION-005: {status: static-confirmed}
+  SETTINGS-001: {status: static-confirmed}
+  OFFLINE-001: {status: static-confirmed}
+  ERROR-001: {status: static-confirmed}
+  INFO-001: {status: static-confirmed}
