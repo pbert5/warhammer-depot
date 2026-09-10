@@ -90,14 +90,13 @@ WITH candidates AS (
 )
 SELECT kind, id, name, user_id, created_at, updated_at
   FROM candidates
- ORDER BY kind, created_at, id;
 SQL
 )
 
 echo "Legacy Depot fixture selector (dry-run=$([ "$mode" = dry-run ] && echo true || echo false))"
 echo "Compose project: $project; database: $db_name"
 echo "Candidates (exact kind, id, name, user_id, created_at, updated_at):"
-compose exec -T depot-db psql -v ON_ERROR_STOP=1 -P pager=off -U "$db_user" -d "$db_name" -c "$selector"
+compose exec -T depot-db psql -v ON_ERROR_STOP=1 -P pager=off -U "$db_user" -d "$db_name" -c "$selector ORDER BY kind, created_at, id;"
 
 if [ "$mode" = dry-run ]; then
     echo "No changes made. Ambiguous records were retained."

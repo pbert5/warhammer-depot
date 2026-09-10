@@ -44,3 +44,11 @@ def test_cleanup_uses_canonical_compose_project_resolution():
     assert "warhammer|warhammer-*" in SCRIPT
     assert 'export COMPOSE_PROJECT_NAME="$project"' in SCRIPT
     assert "--project-name" not in SCRIPT
+
+
+def test_postcondition_wraps_bare_selector_without_ordering_or_semicolon():
+    selector = SCRIPT.split("selector=$(cat <<'SQL'\n", 1)[1].split("\nSQL\n)", 1)[0]
+    assert "ORDER BY" not in selector
+    assert not selector.rstrip().endswith(";")
+    assert 'SELECT count(*) FROM ( $selector ) AS remaining;' in SCRIPT
+    assert '"$selector ORDER BY kind, created_at, id;"' in SCRIPT
