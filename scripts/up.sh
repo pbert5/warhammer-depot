@@ -23,11 +23,14 @@ set -a
 . ./runtime/munda-supabase/env
 set +a
 load_compose_environment "$PWD"
-compose build --pull=false munda-web
-compose up -d
+compose build --pull=false depot-api depot-web munda-web
+# Recreate source-built application services from those just-built images. The
+# database volume is intentionally left attached and untouched.
+compose up -d --no-build --force-recreate --remove-orphans
 if ! ./scripts/apply-network-guard.sh; then
     echo "Network guard failed; stopping the newly started project to avoid leaving Supabase published unprotected." >&2
     compose down || true
     ./scripts/munda-supabase.sh stop || true
     exit 1
 fi
+exec ./scripts/status.sh
