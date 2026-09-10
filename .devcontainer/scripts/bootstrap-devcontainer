@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+cd "${WORKSPACE_FOLDER:-$(git rev-parse --show-toplevel)}"
+echo "Warhammer Dev Container bootstrap"
+node --version
+corepack enable
+pnpm --dir vendor/depot --version
+git --version
+docker info >/dev/null
+docker compose version
+rtk --version
+codex --version
+
+# Safe for fresh clones and worktrees: this never resets or switches a child.
+git submodule sync --recursive
+git submodule update --init --recursive
+
+mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}" "$HOME/.codex"
+if [[ "${WARHAMMER_INSTALL_DEPS:-0}" == "1" ]]; then
+  pnpm --dir vendor/depot install --frozen-lockfile
+fi
+echo "Bootstrap complete. Set WARHAMMER_INSTALL_DEPS=1 to install Depot dependencies."

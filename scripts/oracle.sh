@@ -25,11 +25,13 @@ export WARHAMMER_ORACLE_SOURCE=$ORACLE_SOURCE
 export WARHAMMER_ORACLE_DOCKERFILE=$REPO_DIR/Dockerfile.oracle
 export WARHAMMER_ORACLE_TEST_DOCKERFILE=$REPO_DIR/Dockerfile.oracle-test
 export WARHAMMER_ORACLE_PLAYWRIGHT_CONFIG=$REPO_DIR/playwright.oracle.config.mjs
+export WARHAMMER_PARITY_SPEC=$REPO_DIR/vendor/depot/packages/web/e2e/roster-add-units-parity.spec.ts
 
 echo "Oracle revision: $ORACLE_REV"
 echo "Compose project: $PROJECT"
 $COMPOSE --profile test build oracle-web oracle-test chrome-devtools-mcp
 $COMPOSE up -d oracle-web
-$COMPOSE --profile test run --rm oracle-test pnpm --filter @depot/web exec playwright test --config=/opt/playwright.oracle.config.mjs e2e/home.spec.ts e2e/settings.spec.ts e2e/not-found.spec.ts
+$COMPOSE --profile test run --rm oracle-test pnpm --dir /app/packages/web exec playwright test --config=/opt/playwright.oracle.config.mjs e2e/home.spec.ts e2e/settings.spec.ts e2e/not-found.spec.ts
+$COMPOSE --profile test run --rm oracle-test pnpm --dir /app/packages/web exec playwright test --config=/opt/playwright.oracle.config.mjs e2e/roster-add-units.spec.ts e2e/roster-add-units-parity.spec.ts
 $COMPOSE run --rm --no-deps oracle-test node -e "fetch('http://oracle-web/').then(r=>{if(!r.ok) throw Error(String(r.status));}).catch(e=>{console.error(e);process.exit(1)})"
 echo "Oracle vertical slice passed"

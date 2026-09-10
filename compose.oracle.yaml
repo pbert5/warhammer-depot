@@ -24,6 +24,7 @@ services:
       WEB_BASE_URL: http://oracle-web
     volumes:
       - "${WARHAMMER_ORACLE_PLAYWRIGHT_CONFIG:?Set WARHAMMER_ORACLE_PLAYWRIGHT_CONFIG to playwright.oracle.config.mjs}:/opt/playwright.oracle.config.mjs:ro"
+      - "${WARHAMMER_PARITY_SPEC:?Set WARHAMMER_PARITY_SPEC to candidate parity spec}:/app/packages/web/e2e/roster-add-units-parity.spec.ts:ro"
     depends_on:
       oracle-web:
         condition: service_healthy

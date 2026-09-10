@@ -1,0 +1,32 @@
+{
+  "name": "Warhammer Depot",
+  "build": {"dockerfile": "Dockerfile", "context": ".."},
+  "remoteUser": "node",
+  "containerName": "warhammer-depot-${localEnv:WARHAMMER_WORKTREE_ID,workspace}",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/warhammer-depot,type=bind",
+  "workspaceFolder": "/workspaces/warhammer-depot",
+  "features": {"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "openai.chatgpt",
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-playwright.playwright",
+        "redhat.vscode-yaml",
+        "timonwong.shellcheck"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {"zsh": {"path": "/usr/bin/zsh"}}
+      }
+    }
+  },
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=warhammer-${localEnv:WARHAMMER_WORKTREE_ID,workspace}-pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume",
+    "source=warhammer-codex,target=/home/node/.codex,type=volume"
+  ],
+  "postCreateCommand": "bootstrap-devcontainer"
+}

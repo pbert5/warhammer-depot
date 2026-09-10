@@ -3,13 +3,13 @@
 Historical parity oracle: Depot `6d424fc55820d773bb20866a999750d9462f16e1`
 (the exact merge-base before the fork; comparison reference only, not the
 authoritative deployment gitlink).
-Candidate: Depot `8f9bc1c202dfd40103768ae15ea3768a3d811a1c`.
+Candidate: Depot `3e8c343573c4445f0d3e24f5cb6372e7e9fa8806` (published test repair on top of `a0f7064abb384ed2dde8383fba60c7e0716abb80`).
 
 This is the source-archaeology inventory for parity recovery. Evidence paths are
 relative to `vendor/depot/packages/web/`. `static-confirmed` means the behavior is
-established from oracle source and existing test artifacts; it does not claim that
-the detached oracle has been run. `runtime-pending` means detached-oracle runtime
-validation is still required before the behavior becomes a valid parity contract.
+established from oracle source and existing test artifacts. `runtime-pending`
+means detached-oracle runtime validation is still required before the behavior
+becomes a valid parity contract.
 The test layer named in the final column describes coverage or the intended check,
 not a completed runtime result. No candidate-only behavior is listed as an oracle
 requirement.
@@ -52,3 +52,23 @@ detached oracle. Candidate failures are regressions unless recorded in the expli
 override registry. Fork-only API persistence, autosave, backup JSON/YAML, migration,
 catalogue URL/session state, category grouping, and enhanced search are intentionally
 excluded from this original-behavior inventory.
+
+## 2026-09-10 execution evidence
+
+The detached oracle `6d424fc55820d773bb20866a999750d9462f16e1` built and served in
+the isolated Compose project `warhammer-oracle-6d424fc`. Home/settings/404 smoke
+passed 5/5. The original Add Units test and eight mounted Add Units parity cases
+executed, but all 9 failed during roster creation: the 2.2.0 build generated
+catalogue data, while the historical roster flow did not navigate to the expected
+edit route. This is `FIXTURE MISMATCH`, not candidate regression evidence.
+
+The candidate Postgres/API/web topology built and started in the isolated
+`warhammer-candidate` project. The first run exposed an IndexedDB-only setup wait,
+repaired in published Depot `ba9bf58`; catalog readiness was then published in
+`3e8c343`. The rerun reached the candidate UI but all 9 cases timed out waiting for
+`add-units-button` after roster creation. Since the oracle contract did not pass,
+this remains `UNKNOWN`/runtime evidence, not a product regression.
+
+| Behavior IDs | Oracle | Candidate | Classification | Final result |
+|---|---|---|---|---|
+| ROSTER-ADD-001..006 | FAIL (9/9 setup) | FAIL (9/9 setup) | FIXTURE MISMATCH; UNKNOWN | Runtime-pending; no product claim |

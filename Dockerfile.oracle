@@ -5,8 +5,7 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter @depot/core build
-RUN pnpm --filter @depot/web build
+RUN pnpm build
 
 FROM nginx:1.29-alpine AS production
 RUN printf '%s\n' \
