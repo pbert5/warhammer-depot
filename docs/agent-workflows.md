@@ -16,6 +16,9 @@ define a competing ownership model.
 | test-verifier | Compose unit/type/build/Playwright execution and classification | read-only |
 | integration-reviewer | gitlinks, boundaries, Compose, security and architecture | read-only |
 | docs-maintainer | README, operator and agent workflow documentation | docs |
+| test-architect | granular test map, coverage gaps, regression contracts, failure classification, acceptance review | read-only Terra |
+| recovery-adviser | migration, backup/recovery, state preservation, deployment safety | read-only Terra |
+| rules-archaeologist | bounded Wahapedia grammar and restriction archaeology | read-only Terra |
 
 The lead is scheduler and integrator. A typical DAG is scout -> shared
 contract -> provider/runtime adapters -> acceptance and regression -> final
@@ -29,6 +32,11 @@ check, reintegrate, and repeat final acceptance.
 Only the compose-runtime owner restarts or destructively resets the canonical
 parent Compose environment during acceptance. Browser workers use disposable
 browser containers and unique fixture IDs.
+
+Every substantial run keeps `test-architect` alive; keep `recovery-adviser`
+alive through migrations and deployment and use `rules-archaeologist` for
+bounded domain archaeology. Terra roles are strictly read-only and may not
+mutate repository, Git, Docker, database, or runtime state.
 
 ## Canonical commands
 
