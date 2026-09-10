@@ -5,7 +5,7 @@ export default {
   retries: 0,
   reporter: 'list',
   use: {
-    baseURL: 'http://oracle-web',
+    baseURL: 'http://localhost',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure'

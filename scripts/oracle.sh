@@ -33,5 +33,5 @@ $COMPOSE --profile test build oracle-web oracle-test chrome-devtools-mcp
 $COMPOSE up -d oracle-web
 $COMPOSE --profile test run --rm oracle-test pnpm --dir /app/packages/web exec playwright test --config=/opt/playwright.oracle.config.mjs e2e/home.spec.ts e2e/settings.spec.ts e2e/not-found.spec.ts
 $COMPOSE --profile test run --rm oracle-test pnpm --dir /app/packages/web exec playwright test --config=/opt/playwright.oracle.config.mjs e2e/roster-add-units.spec.ts e2e/roster-add-units-parity.spec.ts
-$COMPOSE run --rm --no-deps oracle-test node -e "fetch('http://oracle-web/').then(r=>{if(!r.ok) throw Error(String(r.status));}).catch(e=>{console.error(e);process.exit(1)})"
+$COMPOSE run --rm --no-deps oracle-test node -e "fetch('http://localhost/').then(r=>{if(!r.ok) throw Error(String(r.status));}).catch(e=>{console.error(e);process.exit(1)})"
 echo "Oracle vertical slice passed"

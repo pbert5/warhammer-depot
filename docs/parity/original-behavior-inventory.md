@@ -55,20 +55,33 @@ excluded from this original-behavior inventory.
 
 ## 2026-09-10 execution evidence
 
-The detached oracle `6d424fc55820d773bb20866a999750d9462f16e1` built and served in
-the isolated Compose project `warhammer-oracle-6d424fc`. Home/settings/404 smoke
-passed 5/5. The original Add Units test and eight mounted Add Units parity cases
-executed, but all 9 failed during roster creation: the 2.2.0 build generated
-catalogue data, while the historical roster flow did not navigate to the expected
-edit route. This is `FIXTURE MISMATCH`, not candidate regression evidence.
+The detached oracle `6d424fc55820d773bb20866a999750d9462f16e1` now passes its
+self-test gate in the isolated Compose project `warhammer-oracle-6d424fc`:
 
-The candidate Postgres/API/web topology built and started in the isolated
-`warhammer-candidate` project. The first run exposed an IndexedDB-only setup wait,
-repaired in published Depot `ba9bf58`; catalog readiness was then published in
-`3e8c343`. The rerun reached the candidate UI but all 9 cases timed out waiting for
-`add-units-button` after roster creation. Since the oracle contract did not pass,
-this remains `UNKNOWN`/runtime evidence, not a product regression.
+- home/settings/not-found smoke: 5/5
+- historical roster-add-units E2E plus eight mounted parity cases: 9/9
 
-| Behavior IDs | Oracle | Candidate | Classification | Final result |
-|---|---|---|---|---|
-| ROSTER-ADD-001..006 | FAIL (9/9 setup) | FAIL (9/9 setup) | FIXTURE MISMATCH; UNKNOWN | Runtime-pending; no product claim |
+The initial oracle failure was a harness topology defect, not historical
+application behavior. The reconstructed test container used `http://oracle-web`;
+the historical workflow used Vite on `localhost`, and Chromium therefore exposed
+`crypto.randomUUID` only in the latter secure context. The parent harness now
+shares the oracle web container's network namespace and runs the unchanged tests
+at `http://localhost`.
+
+Oracle data provenance is live Wahapedia 11th-edition CSV data downloaded during
+the Docker build from `https://wahapedia.ru/wh40k11ed/`; the generated
+`Last_update.csv` value was `2026-09-07 15:20:22`. No frozen historical CSV set
+was found in repository history, artifacts, caches, or local build state. The
+generated Drukhari manifest contained 46 datasheets and 13 detachments, including
+Archon and Kabalite Warriors. This is documented provenance, not a claim that the
+live catalogue equals the historical catalogue.
+
+The candidate 200/null roster-load hypothesis was confirmed by browser/API
+evidence and a focused regression test: `GET /api/rosters/:id` returned HTTP 200
+with JSON `null` before the asynchronous local draft save completed, and the
+candidate treated that as final. Child commit `c877f6d` now falls back to a local
+draft for a null response while preserving server authority for a returned roster.
+
+The original Add Units parity contracts are therefore oracle-green. Candidate
+execution and the remaining inventory clusters are still being closed; no
+runtime-pending row is being reclassified from source archaeology alone.
