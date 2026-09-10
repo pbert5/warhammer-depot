@@ -1,6 +1,8 @@
 # Original Depot behavior inventory
 
-Oracle: Depot `6d424fc55820d773bb20866a999750d9462f16e1` (the exact merge-base before the fork).
+Historical parity oracle: Depot `6d424fc55820d773bb20866a999750d9462f16e1`
+(the exact merge-base before the fork; comparison reference only, not the
+authoritative deployment gitlink).
 Candidate: Depot `8f9bc1c202dfd40103768ae15ea3768a3d811a1c`.
 
 This is the source-archaeology inventory for parity recovery. Evidence paths are

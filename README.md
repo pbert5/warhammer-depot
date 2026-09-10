@@ -30,9 +30,12 @@ and `pnpm build`. The upstream build generates Wahapedia data and places it in
 
 ### First deployment
 
-The `vendor/depot` submodule must be checked out at the A0-approved commit
-`6d424fc55820d773bb20866a999750d9462f16e1` before building. Private
-`data/lists` remains a separate submodule and is not copied into the image.
+Build from the `vendor/depot` commit recorded by the parent repository's
+gitlink; that gitlink is the authoritative deployment input. The historical
+parity oracle `6d424fc55820d773bb20866a999750d9462f16e1` is for parity
+comparison only and must not replace the parent gitlink before building.
+Private `data/lists` remains a separate submodule and is not copied into the
+image.
 
 ```sh
 cp .env.local.example .env.local
