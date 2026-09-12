@@ -10,6 +10,7 @@ test("doctor is repository-owned and non-destructive", () => {
   assert.doesNotMatch(doctor, /git reset|git checkout/);
   assert.match(doctor, /docker compose/);
   assert.match(doctor, /chrome-devtools-mcp/);
+  assert.match(doctor, /tools\/list/);
   assert.match(doctor, /SUMMARY PASS=/);
 });
 

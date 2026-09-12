@@ -92,10 +92,23 @@ if [[ "${CODEX_DOCTOR_MCP:-0}" == 1 ]]; then
   elif ! docker image inspect warhammer-chrome-devtools-mcp >/dev/null 2>&1; then
     warn_check mcp 'skipped; image is not built'
   else
-    warn_check mcp 'transport startup is available; actual browser calls require a fresh Codex session'
+    probe=$(
+      (printf '%s\n' \
+        '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"codex-doctor","version":"1"}}}' \
+        '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+        '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'; sleep 2) |
+        timeout 20s env DEPOT_POSTGRES_PASSWORD=codex-doctor \
+          DEPOT_TAILSCALE_IPV4_ADDR=127.0.0.1 DEPOT_TAILSCALE_ADDR=::1 \
+          docker compose --profile development-tools run --rm --no-deps -T chrome-devtools-mcp 2>/dev/null || true
+    )
+    if rg -q '"serverInfo"' <<<"$probe" && rg -q '"tools"' <<<"$probe"; then
+      pass_check mcp 'initialize and tools/list succeeded'
+    else
+      warn_check mcp 'transport did not complete initialize/tools/list'
+    fi
   fi
 else
-  warn_check mcp 'not exercised; set CODEX_DOCTOR_MCP=1 for a transport probe'
+  warn_check mcp 'not exercised; set CODEX_DOCTOR_MCP=1 for initialize/tools/list'
 fi
 
 printf 'SUMMARY PASS=%d WARN=%d FAIL=%d\n' "$pass" "$warn" "$fail"
