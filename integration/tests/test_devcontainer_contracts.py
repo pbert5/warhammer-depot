@@ -22,6 +22,7 @@ def test_node_compose_and_workspace_contract():
     assert "corepack prepare pnpm@10.20.0" in dockerfile
     for tool in ("rtk", "codex", "openssh-client", "jq", "yq", "lazygit"):
         assert tool in dockerfile or tool in (ROOT / ".devcontainer/scripts/bootstrap-devcontainer").read_text()
+    assert (ROOT / ".devcontainer/scripts/codex-doctor").exists()
 
 
 def test_bootstrap_is_explicit_idempotent_and_non_destructive():

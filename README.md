@@ -112,6 +112,12 @@ that users row after the API migration. It is intentionally distinct from
 Depot's default `...0001` identity. The E2E database and host bindings are
 namespaced and never use the normal project volume or Tailscale bindings.
 
+For a non-destructive checkout and Codex environment check, run
+`./scripts/codex-doctor.sh`. It reports PASS/WARN/FAIL for the repository,
+tools, agents, plugin, Compose MCP service, and a focused doctor contract test.
+Set `CODEX_DOCTOR_MCP=1` when the browser tools image already exists and a
+transport startup probe is desired.
+
 `./scripts/purge-e2e.sh` is a dry-run by default. Use
 `./scripts/purge-e2e.sh --apply` to remove only the reserved parent's rosters
 and collections. The script verifies the bootstrap row before mutation and
@@ -138,6 +144,21 @@ semantics remain unchanged.
 The application ports are published only on `127.0.0.1`, the configured
 Tailscale IPv4, and the configured Tailscale IPv6. PostgreSQL and the Depot
 API are internal Compose services and are not published to the host.
+
+Normal interactive start from the canonical checkout:
+
+```sh
+cd /mypool/code/warhammer
+git switch main
+git pull --ff-only
+git submodule update --init --recursive
+./scripts/codex-doctor.sh
+codex
+```
+
+Worker changes belong in isolated worktrees. Browser acceptance uses the
+repository Chrome DevTools plugin backed by disposable Compose Chromium;
+Docker Compose remains the runtime and test authority.
 
 ### Supabase publication guard
 

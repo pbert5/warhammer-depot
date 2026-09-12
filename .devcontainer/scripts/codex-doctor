@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+cd "${WORKSPACE_FOLDER:-$(git rev-parse --show-toplevel)}"
+exec ./scripts/codex-doctor.sh "$@"
