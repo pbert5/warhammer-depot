@@ -76,7 +76,7 @@ docker compose -f vendor/mundamanager/compose.standalone.yaml up -d --build
 docker compose -f vendor/mundamanager/compose.standalone.yaml run --rm --no-deps -T chrome-devtools-mcp
 ```
 
-Browser agents use `http://depot-web/service` through Compose service DNS for
+Browser agents use `http://depot-web` through Compose service DNS for
 internal integrated checks. The disposable browser container uses stdio MCP and
 container-local CDP at `127.0.0.1:9222`; this path does not require a
 bridge-to-host Tailscale hairpin. Published `100.110.27.100:19096` is a
