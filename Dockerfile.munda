@@ -18,4 +18,4 @@ LABEL org.opencontainers.image.source.revision=$WARHAMMER_PARENT_REVISION \
       com.warhammer.munda.revision=$MUNDA_SOURCE_REVISION
 COPY --from=build /app ./
 EXPOSE 3000
-CMD ["node", ".next/standalone/server.js"]
+CMD ["npm", "run", "start", "--", "--hostname", "0.0.0.0"]
