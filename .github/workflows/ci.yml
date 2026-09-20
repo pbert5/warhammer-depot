@@ -2,7 +2,7 @@ name: Compose CI
 
 on:
   push:
-    branches: [make-it-work]
+    branches: [main]
   pull_request:
 
 permissions:
@@ -79,6 +79,11 @@ jobs:
             .env.e2e
 
       - name: Run isolated E2E through Compose
+        env:
+          # Keep the disposable Postgres/API topology within its connection
+          # budget; the browser suite remains fully enabled, but avoids
+          # cross-test resource starvation on shared GitHub runners.
+          PLAYWRIGHT_WORKERS: '4'
         run: ./scripts/e2e.sh
 
       - name: Clean isolated E2E project
