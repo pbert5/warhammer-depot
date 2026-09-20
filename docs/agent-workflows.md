@@ -45,7 +45,7 @@ mutate repository, Git, Docker, database, or runtime state.
 docker compose up -d
 docker compose run --rm --no-deps -T chrome-devtools-mcp
 
-# Depot standalone and deterministic checks
+# Integrated parent topology: Depot checks
 docker compose up -d --build
 docker compose --profile test run --rm depot-test pnpm test
 docker compose --profile test run --rm depot-test pnpm typecheck
@@ -71,9 +71,6 @@ cp .env.e2e.example .env.e2e  # set disposable values; never commit .env.e2e
 # its database in project-specific depot-e2e-db-data. Purge retains the row
 # and fails closed if the row or post-purge counts are wrong.
 
-# Integrated parent topology (launcher, Depot, and Munda)
-docker compose up -d --build
-docker compose run --rm --no-deps -T chrome-devtools-mcp
 ```
 
 Browser agents use service DNS for integrated checks and published front doors

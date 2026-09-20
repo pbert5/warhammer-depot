@@ -68,3 +68,19 @@ def test_e2e_identity_and_purge_guards_are_explicit():
     assert "COMMIT;" in purge
     assert "Purge postcondition failed" in purge
     assert "down --volumes" not in purge
+
+
+def test_e2e_readiness_wait_excludes_one_shot_bootstrap():
+    e2e = (ROOT / "scripts/e2e.sh").read_text()
+    readiness_line = next(
+        line for line in e2e.splitlines() if "up -d --build --wait" in line
+    )
+    assert "depot-e2e-bootstrap" not in readiness_line
+    assert "run --rm --no-deps depot-e2e-bootstrap" in e2e
+
+
+def test_agent_workflow_labels_parent_compose_once():
+    docs = (ROOT / "docs/agent-workflows.md").read_text()
+    assert docs.count("# Integrated parent topology") == 1
+    assert "# Depot standalone and deterministic checks" not in docs
+    assert "# Integrated parent topology: Depot checks" in docs
